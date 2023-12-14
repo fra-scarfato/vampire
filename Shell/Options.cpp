@@ -122,10 +122,12 @@ void Options::init()
                                         "spider",
                                         "tclausify",
                                         "tpreprocess",
-                                        "vampire"});
+                                        "vampire",
+                                        "guarded"});
     _mode.description=
     "Select the mode of operation. Choices are:\n"
     "  -vampire: the standard mode of operation for first-order theorem proving\n"
+    "  -guarded: mode to classify and resolve guarded fragment\n"
     "  -portfolio: a portfolio mode running a specified schedule (see schedule)\n"
     "  -casc, casc_sat, smtcomp - like portfolio mode, with competition specific\n     presets for schedule, etc.\n"
     "  -preprocess,axiom_selection,clausify: modes for producing output\n      for other solvers.\n"
@@ -624,6 +626,12 @@ void Options::init()
     _lookup.insert(&_showAll);
     _showAll.tag(OptionTag::DEVELOPMENT);
 
+    /*output for guarded fragment namespace*/
+    _showGuarded = BoolOptionValue("show_guarded","",false);
+    _showGuarded.description="Show how guarded resolver works";
+    _lookup.insert(&_showGuarded);
+    _showGuarded.tag(OptionTag::DEVELOPMENT);
+
     _showActive = BoolOptionValue("show_active","",false);
     _showActive.description="Print activated clauses.";
     _lookup.insert(&_showActive);
@@ -688,6 +696,8 @@ void Options::init()
     _showTheoryAxioms.description="Show the added theory axioms.";
     _lookup.insert(&_showTheoryAxioms);
     _showTheoryAxioms.tag(OptionTag::DEVELOPMENT);
+
+    
 
 #if VZ3
     _showZ3 = BoolOptionValue("show_z3","",false);

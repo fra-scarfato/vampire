@@ -398,7 +398,9 @@ public:
     SPIDER,
     TCLAUSIFY,
     TPREPROCESS,
-    VAMPIRE
+    VAMPIRE,
+    /** this mode classify and resolve a guarded fragment */
+    GUARDED
 };
 
   enum class Schedule : unsigned int {
@@ -2109,6 +2111,7 @@ public:
 
   // IMPORTANT, if you add a showX command then include showAll
   bool showAll() const { return _showAll.actualValue; }
+  bool showGuarded() const { return _showGuarded.actualValue; }
   bool showActive() const { return showAll() || _showActive.actualValue; }
   bool showBlocked() const { return showAll() || _showBlocked.actualValue; }
   bool showDefinitions() const { return showAll() || _showDefinitions.actualValue; }
@@ -2680,6 +2683,7 @@ private:
   ChoiceOptionValue<SatSolver> _satSolver;
   ChoiceOptionValue<SaturationAlgorithm> _saturationAlgorithm;
   BoolOptionValue _showAll;
+  BoolOptionValue _showGuarded;
   BoolOptionValue _showActive;
   BoolOptionValue _showBlocked;
   BoolOptionValue _showDefinitions;

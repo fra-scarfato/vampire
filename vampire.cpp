@@ -55,6 +55,7 @@
 #include "Shell/Statistics.hpp"
 #include "Shell/UIHelper.hpp"
 #include "Shell/LaTeX.hpp"
+#include "GuardedFragment/Classifier.hpp"
 
 #include "Saturation/SaturationAlgorithm.hpp"
 
@@ -63,6 +64,7 @@
 #if CHECK_LEAKS
 #include "Lib/MemoryLeak.hpp"
 #endif
+#include "GuardedFragment/GuardedPreprocess.hpp"
 
 using namespace std;
 
@@ -86,6 +88,31 @@ using namespace std;
  * (we terminate by a call to the @b abort() function in this case).
  */
 int vampireReturnValue = VAMP_RESULT_STATUS_UNKNOWN;
+
+VWARN_UNUSED
+Problem* getPreprocessedGuardedProblem()
+{
+#ifdef __linux__
+  unsigned saveInstrLimit = env.options->instructionLimit();
+  if (env.options->parsingDoesNotCount()) {
+    env.options->setInstructionLimit(0);
+  }
+#endif
+  Problem* prb = UIHelper::getInputProblem(*env.options);
+
+  // GuardedFragment::Classifier classifier;
+  // if(!classifier.isInGuardedFragment(prb->units())) exit(-1);
+
+#ifdef __linux__
+  if (env.options->parsingDoesNotCount()) {
+    env.options->setInstructionLimit(saveInstrLimit+Timer::elapsedMegaInstructions());
+  }
+#endif
+
+  TIME_TRACE(TimeTrace::PREPROCESSING);
+  GuardedFragment::GuardedPreprocess prepro(*env.options);
+  prepro.preprocess(*prb);
+}
 
 /**
  * Preprocess input problem
@@ -146,6 +173,19 @@ void getRandomStrategy()
   // It is possible that the random strategy is still incorrect as we don't
   // have access to the Property when setting preprocessing
   env.options->checkProblemOptionConstraints(prb->getProperty(), /*before_preprocessing = */ false);
+}
+
+VWARN_UNUSED
+Problem *doProvingGuardedProblem()
+{
+  env.options->randomizeStrategy(0);
+
+  Problem *prb = getPreprocessedGuardedProblem();
+
+  env.options->randomizeStrategy(prb->getProperty());
+
+  // ProvingHelper::runVampireSaturation(*prb, *env.options);
+  return prb;
 }
 
 VWARN_UNUSED
@@ -377,6 +417,33 @@ void outputMode()
   //we have successfully output all clauses, so we'll terminate with zero return value
   vampireReturnValue = VAMP_RESULT_STATUS_SUCCESS;
 } // outputMode
+
+void guardedMode()
+{  
+  //these options could delete some clause and make the resolution useless
+  env.options->set("sup","off",false);
+  env.options->set("erd","off",false);
+  env.options->set("fde","none",false);
+  env.options->set("mep","off",false);
+  env.options->set("updr","off",false);
+  env.options->set("sfv","off",false);
+  env.options->set("sims","off",false);
+  env.options->set("bd","off",false);
+  env.options->set("fd","off",false);
+  env.options->set("fs","off",false);
+  env.options->set("fsr","off",false);
+
+  ScopedPtr<Problem> prb(doProvingGuardedProblem());
+
+  env.beginOutput();
+  UIHelper::outputResult(env.out());
+  env.endOutput();
+
+  if (env.statistics->terminationReason == Statistics::REFUTATION
+      || env.statistics->terminationReason == Statistics::SATISFIABLE) {
+      vampireReturnValue = VAMP_RESULT_STATUS_SUCCESS;
+  }
+}
 
 void vampireMode()
 {
@@ -619,6 +686,9 @@ int main(int argc, char* argv[])
 
     switch (env.options->mode())
     {
+    case Options::Mode::GUARDED:
+      guardedMode();
+      break;
     case Options::Mode::AXIOM_SELECTION:
       axiomSelectionMode();
       break;

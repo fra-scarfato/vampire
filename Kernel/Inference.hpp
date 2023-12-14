@@ -105,7 +105,6 @@ UnitInputType getInputType(UnitInputType t1, UnitInputType t2);
 enum class InferenceRule : unsigned char {
   /** input formula or clause */
   INPUT,
-
   /** THIS DEFINES AN INTERVAL IN THIS ENUM WHERE ALL
    * (preprocessing/normalisation) FORMULA TRANSFORMATION SHOULD BELONG
    * (see also INTERNAL_FORMULA_TRANSFORMATION_LAST and isFormulaTransformation below). */

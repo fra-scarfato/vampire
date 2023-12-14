@@ -14,7 +14,7 @@
  * @since 27/12/2007 Manchester, changed completely to a new implementation
  */
 
-
+#include <iostream>
 #include "Kernel/Clause.hpp"
 #include "Kernel/Formula.hpp"
 #include "Kernel/Inference.hpp"
@@ -123,8 +123,10 @@ void CNF::clausify (Formula* f)
     clausify(f->qarg());
     return;
 
-  default:
+  default:{
+    std::cout << f->toString() << std::endl;
     ASSERTION_VIOLATION;
+      }
   }
 } // CNF::clausify
 

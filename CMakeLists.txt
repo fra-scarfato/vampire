@@ -768,6 +768,10 @@ set(VAMPIRE_SOURCES
     ${VAMPIRE_CASC_SOURCES}
     Forwards.hpp
     "${CMAKE_CURRENT_BINARY_DIR}/version.cpp"
+    GuardedFragment/Classifier.hpp
+    GuardedFragment/Classifier.cpp
+    GuardedFragment/GuardedPreprocess.hpp
+    GuardedFragment/GuardedPreprocess.cpp
     )
 
 ################################################################
