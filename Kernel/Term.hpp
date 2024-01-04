@@ -802,6 +802,8 @@ protected:
   unsigned _weight;
   /** length of maximum reduction length */
   int _maxRedLen;
+  /** Var depth */
+  int _varDepth;
   union {
     /** If _isTwoVarEquality is false, this value is valid and contains
      * number of occurrences of variables */
@@ -924,6 +926,12 @@ public:
     _args[0]._info.sort = 0u;
     _args[0]._info.literal = 1u;
   }
+  
+  /* getter and setter for variable depth*/
+  void setVarDepth(int depth)
+  { _varDepth = depth; }
+  int getVarDepth()
+  { return _varDepth; }
 
   /**
    * A unique header, 2*p is negative and 2*p+1 if positive where p is

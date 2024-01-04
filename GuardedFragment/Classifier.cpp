@@ -100,6 +100,7 @@ bool Classifier::isInGuardedFragment(Formula* formula)
         case IFF:
         case IMP:
             if (isInGuardedFragment(formula->left())) return isInGuardedFragment(formula->right());
+            return false;
         case OR:
         case AND: {
             FormulaList::Iterator it(formula->args());
@@ -126,7 +127,6 @@ bool Classifier::isInGuardedFragment(Clause* clause)
 {
     if (clause->isGround()) return true;
     
-    auto size = clause->size();
     static DHSet<unsigned> allVars;
     bool checkGuard = false;
 
@@ -136,8 +136,7 @@ bool Classifier::isInGuardedFragment(Clause* clause)
     while (literals.hasNext())
     {
         Literal *lit = literals.next();
-        
-        cout << lit->toString() << endl;
+     
         /*negative literal ¬A in c that does not contain a
         non-ground, functional term, and that contains all variables of c*/
         if (lit->isNegative() && !checkGuard){
@@ -183,7 +182,6 @@ bool Classifier::containsAllVariablesOfClause(TermList term, DHSet<unsigned> all
         {
             auto termOrVar = si.next();
             si.right();
-            /*L(f(g(X,Y,Z))) or L(f(X,g(X,Y,Z)) are accepted? */
             if (termOrVar.isTerm()) return containsAllVariablesOfClause(termOrVar, allVars);
             if (var == termOrVar.var()) foundVar = true;   
         }
@@ -199,13 +197,13 @@ bool Classifier::isGuard(Literal* mayGuard, DHSet<unsigned> allVars)
 {
     bool foundVariable = false;
     auto vars = allVars.iterator();
-    cout << mayGuard->toString() << endl;
+    auto ex = allVars.iterator();
     
     while (vars.hasNext())
     {
         SubtermIterator si(mayGuard);
         auto var = vars.next();
-        
+        foundVariable = false;
         while (si.hasNext() && !foundVariable)
         {
             auto guardVariable = si.next();

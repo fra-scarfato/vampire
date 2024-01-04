@@ -399,8 +399,9 @@ public:
     TCLAUSIFY,
     TPREPROCESS,
     VAMPIRE,
-    /** this mode classify and resolve a guarded fragment */
-    GUARDED
+    /** this mode resolve a guarded fragment */
+    GUARDED,
+    CLASSIFIER
 };
 
   enum class Schedule : unsigned int {
@@ -2111,7 +2112,7 @@ public:
 
   // IMPORTANT, if you add a showX command then include showAll
   bool showAll() const { return _showAll.actualValue; }
-  bool showGuarded() const { return _showGuarded.actualValue; }
+  bool showGuarded() const { return showAll() || _showGuarded.actualValue; }
   bool showActive() const { return showAll() || _showActive.actualValue; }
   bool showBlocked() const { return showAll() || _showBlocked.actualValue; }
   bool showDefinitions() const { return showAll() || _showDefinitions.actualValue; }

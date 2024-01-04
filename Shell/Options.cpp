@@ -123,11 +123,13 @@ void Options::init()
                                         "tclausify",
                                         "tpreprocess",
                                         "vampire",
-                                        "guarded"});
+                                        "guarded",
+                                        "classifier"});
     _mode.description=
     "Select the mode of operation. Choices are:\n"
     "  -vampire: the standard mode of operation for first-order theorem proving\n"
-    "  -guarded: mode to classify and resolve guarded fragment\n"
+    "  -guarded: mode to resolve guarded fragment\n"
+    "  -classifier: to classify if a problem is in guarded fragment\n"
     "  -portfolio: a portfolio mode running a specified schedule (see schedule)\n"
     "  -casc, casc_sat, smtcomp - like portfolio mode, with competition specific\n     presets for schedule, etc.\n"
     "  -preprocess,axiom_selection,clausify: modes for producing output\n      for other solvers.\n"

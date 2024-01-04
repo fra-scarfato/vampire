@@ -49,6 +49,10 @@
 #include "Inferences/FastCondensation.hpp"
 #include "Inferences/DistinctEqualitySimplifier.hpp"
 
+/*----------------------------------------------*/
+#include "GuardedFragment/GuardedResolution.hpp"
+/*----------------------------------------------*/
+
 #include "Inferences/InferenceEngine.hpp"
 #include "Inferences/BackwardDemodulation.hpp"
 #include "Inferences/BackwardSubsumptionResolution.hpp"
@@ -1537,7 +1541,14 @@ SaturationAlgorithm* SaturationAlgorithm::createFromOptions(Problem& prb, const 
 
   gie->addFront(new Factoring());
   if (opt.binaryResolution()) {
-    gie->addFront(new BinaryResolution());
+    /*----------------------------------------------------------*/
+    if(opt.mode() == Options::Mode::GUARDED) {
+      /*Ordered Resolution*/
+      gie->addFront(new GuardedFragment::GuardedResolution());
+    /*----------------------------------------------------------*/
+    } else {
+      gie->addFront(new BinaryResolution());
+    }
   }
   if (opt.unitResultingResolution() != Options::URResolution::OFF) {
     gie->addFront(new URResolution());

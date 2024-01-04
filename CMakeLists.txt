@@ -772,6 +772,8 @@ set(VAMPIRE_SOURCES
     GuardedFragment/Classifier.cpp
     GuardedFragment/GuardedPreprocess.hpp
     GuardedFragment/GuardedPreprocess.cpp
+    GuardedFragment/GuardedResolution.hpp
+    GuardedFragment/GuardedResolution.cpp
     )
 
 ################################################################

@@ -100,9 +100,6 @@ Problem* getPreprocessedGuardedProblem()
 #endif
   Problem* prb = UIHelper::getInputProblem(*env.options);
 
-  // GuardedFragment::Classifier classifier;
-  // if(!classifier.isInGuardedFragment(prb->units())) exit(-1);
-
 #ifdef __linux__
   if (env.options->parsingDoesNotCount()) {
     env.options->setInstructionLimit(saveInstrLimit+Timer::elapsedMegaInstructions());
@@ -112,6 +109,7 @@ Problem* getPreprocessedGuardedProblem()
   TIME_TRACE(TimeTrace::PREPROCESSING);
   GuardedFragment::GuardedPreprocess prepro(*env.options);
   prepro.preprocess(*prb);
+  return prb;
 }
 
 /**
@@ -178,13 +176,9 @@ void getRandomStrategy()
 VWARN_UNUSED
 Problem *doProvingGuardedProblem()
 {
-  env.options->randomizeStrategy(0);
-
   Problem *prb = getPreprocessedGuardedProblem();
 
-  env.options->randomizeStrategy(prb->getProperty());
-
-  // ProvingHelper::runVampireSaturation(*prb, *env.options);
+  ProvingHelper::runVampireSaturation(*prb, *env.options);
   return prb;
 }
 
@@ -430,8 +424,6 @@ void guardedMode()
   env.options->set("sims","off",false);
   env.options->set("bd","off",false);
   env.options->set("fd","off",false);
-  env.options->set("fs","off",false);
-  env.options->set("fsr","off",false);
 
   ScopedPtr<Problem> prb(doProvingGuardedProblem());
 
@@ -462,6 +454,21 @@ void vampireMode()
       vampireReturnValue = VAMP_RESULT_STATUS_SUCCESS;
   }
 } // vampireMode
+
+void classifierMode()
+{
+  Problem* prb = UIHelper::getInputProblem(*env.options);
+
+  GuardedFragment::Classifier classifier;
+  env.beginOutput();
+  if(classifier.isInGuardedFragment(prb->units()))
+    env.out() << "The problem is in guarded fragment." << endl;
+  else
+    env.out() << "The problem is not in guarded fragment." << endl;
+  env.endOutput();
+  
+  vampireReturnValue = VAMP_RESULT_STATUS_SUCCESS;
+}
 
 void spiderMode()
 {
@@ -686,6 +693,9 @@ int main(int argc, char* argv[])
 
     switch (env.options->mode())
     {
+    case Options::Mode::CLASSIFIER:
+      classifierMode();
+      break;
     case Options::Mode::GUARDED:
       guardedMode();
       break;

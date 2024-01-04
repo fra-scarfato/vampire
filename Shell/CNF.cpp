@@ -123,10 +123,8 @@ void CNF::clausify (Formula* f)
     clausify(f->qarg());
     return;
 
-  default:{
-    std::cout << f->toString() << std::endl;
+  default:
     ASSERTION_VIOLATION;
-      }
   }
 } // CNF::clausify
 
